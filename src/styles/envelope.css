@@ -172,18 +172,21 @@
   .envelope-pocket { z-index: 4; }
   .seal { z-index: 5; }
   .is-opening .envelope-flap {
-    animation: phoneFlapOpen 1.65s .35s var(--ease) forwards;
+    transition: none;
+    -webkit-transition: none;
+    animation: mobileHingedFlap 1.65s .35s var(--ease) both;
+    -webkit-animation: mobileHingedFlap 1.65s .35s var(--ease) both;
   }
   .is-opening .letter {
-    animation: phoneLetterLift 2.65s 1.35s var(--ease) forwards;
+    /* Wait until the flap has almost completed its 1.65s rotation.
+       The letter still reaches exactly the same final pose at 4 seconds. */
+    animation: phoneLetterLift 2.05s 1.95s var(--ease) forwards;
+    -webkit-animation: phoneLetterLift 2.05s 1.95s var(--ease) forwards;
   }
   .is-opening .envelope-back,
   .is-opening .envelope-pocket { animation: none; }
   .is-opening .envelope-assembly { animation: none; transform: none; }
-  @keyframes phoneFlapOpen {
-    from { transform: rotateX(0deg); }
-    to { transform: rotateX(-158deg); }
-  }
+
   @keyframes phoneLetterLift {
     0% { transform: translateY(0); opacity: 0; }
     25% { opacity: 1; }
@@ -202,4 +205,15 @@
   .letter .ornament { font-size: 12px; line-height: 1; margin: 5px auto 6px; }
   .letter .wedding-day { margin-top: 4px; }
   .letter .invitation-text { font-size: clamp(12px, 3.4vw, 14px); line-height: 1.35; }
+}
+
+/* Global, uniquely named mobile keyframes: no media-scoped fallback to flapFold.
+   Each frame has only a rotation; the hinge origin remains in the static rule. */
+@keyframes mobileHingedFlap {
+  from { -webkit-transform: rotateX(0deg); transform: rotateX(0deg); }
+  to { -webkit-transform: rotateX(-158deg); transform: rotateX(-158deg); }
+}
+@-webkit-keyframes mobileHingedFlap {
+  from { -webkit-transform: rotateX(0deg); transform: rotateX(0deg); }
+  to { -webkit-transform: rotateX(-158deg); transform: rotateX(-158deg); }
 }
