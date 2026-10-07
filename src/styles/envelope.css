@@ -1,209 +1,91 @@
-/* Layers never change their z-index: back (1), letter (2), pocket (3), flap (4), seal (5).
-   The flap folds away and fades behind the rear edge before the letter begins to rise. */
-.intro {
+/* Exactly five paper layers. Their z-index and depth remain fixed in all states.
+   Only Envelope.jsx's single clock controls movement; no keyframes or fixes. */
+.envelope-scene {
   position: fixed; inset: 0; z-index: 100; overflow: hidden;
   display: grid; place-items: center;
   padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
-  background: #03281f var(--velvet) center / cover no-repeat;
-  --ease: cubic-bezier(.22, .68, .25, 1);
+  background: linear-gradient(#001a1570, #001a1570), #03281f var(--envelope-velvet) center / cover no-repeat;
 }
-.intro-shade { position: absolute; inset: 0; background: #001a1570; }
-.intro::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: #f8f0e2; opacity: 0; }
-.envelope-stage {
-  position: relative; width: min(620px, 88vw, 64svh);
-  aspect-ratio: 1.55; perspective: 1500px;
-  transform: translateY(20%);
+.envelope-scene .envelope {
+  position: relative; width: min(620px, 88vw, 64svh); aspect-ratio: 1.55;
+  perspective: 1200px; -webkit-perspective: 1200px;
+  transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+  cursor: pointer;
 }
-.envelope-assembly { position: absolute; inset: 0; }
-.envelope-back, .envelope-pocket, .flap-front, .flap-back, .letter {
-  background: #f3e9d6 var(--paper) center / cover no-repeat;
+.envelope-scene .envelope-back {
+  position: absolute; inset: 0; z-index: 1;
+  background: #f3e9d6 var(--envelope-paper) center / cover no-repeat;
+  border: 1px solid #c19b62; border-radius: 7px;
+  box-shadow: 0 25px 65px #00120cb3;
 }
-.envelope-back {
-  position: absolute; inset: 0; z-index: 1; border: 1px solid #c19b62;
-  border-radius: 7px; box-shadow: 0 25px 65px #00120cb3, inset 0 0 15px #a07c3430;
+.envelope-scene .flap {
+  position: absolute; top: 0; left: 0; width: 100%; height: 59%; z-index: 2;
+  transform: rotateX(0deg); transform-origin: 50% 0%; -webkit-transform-origin: 50% 0%;
+  transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
 }
-.envelope-pocket {
-  position: absolute; inset: 0; z-index: 3; border-radius: 6px;
-  /* A single continuous curved paper surface, rather than separate triangles. */
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 620 400' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 0 C105 112 232 181 294 220 Q310 231 326 220 C388 181 515 112 620 0 L620 400 L0 400Z'/%3E%3C/svg%3E");
-  mask-size: 100% 100%;
-  box-shadow: inset 0 -2px 5px #98744330;
+.envelope-scene .paper-face, .envelope-scene .paper-reverse {
+  display: block; position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
 }
-.envelope-seams { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #c19b62; stroke-width: 1.3; filter: drop-shadow(0 1px 1px #fff8); }
-.envelope-flap {
-  position: absolute; inset: 0 0 auto; height: 59%; z-index: 4;
-  transform-origin: 50% 0; transform-style: preserve-3d;
+.envelope-scene .paper-reverse { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); }
+.envelope-scene .letter {
+  position: absolute; left: 6%; top: 3%; width: 88%; height: 94%; z-index: 3;
+  transform: translateY(0%) translateZ(1px);
+  clip-path: inset(0 0 100% 0); -webkit-clip-path: inset(0 0 100% 0);
+  background: linear-gradient(#f8f0e28c, #f8f0e28c), #f8f0e2 var(--envelope-paper) center / cover no-repeat;
+  border: 1px solid #c5a46a; border-radius: 3px;
+  padding: 22px 30px; text-align: center; opacity: 1;
 }
-.flap-front, .flap-back {
-  position: absolute; inset: 0; backface-visibility: hidden;
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 620 236' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 0 L620 0 C548 115 419 173 327 228 Q310 240 293 228 C201 173 72 115 0 0Z'/%3E%3C/svg%3E");
-  mask-size: 100% 100%;
-  box-shadow: inset 0 0 0 1px #b08a4f;
-}
-.flap-front::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #fff6, transparent 70%, #94734b25); }
-.flap-back { transform: rotateX(180deg); background-color: #e8d7ba; background-blend-mode: multiply; }
-.letter {
-  position: absolute; left: 6%; top: 3%; width: 88%; height: 94%; z-index: 2;
-  padding: 22px 30px; text-align: center; border: 1px solid #c5a46a;
-  box-shadow: 0 5px 20px #5b3b2225; border-radius: 3px;
-}
-.letter::before, .letter::after { display: none; }
-.letter .eyebrow { font-size: 9px; letter-spacing: 3px; }
-.letter .ornament { margin: 9px auto 12px; }
-.letter .names { font-size: 48px; margin: 14px 0; }
-.letter .names span { display: inline; text-transform: none; }
-.letter .names span:last-child { margin: 0; }
-.letter .names em { position: static; display: inline-block; font-size: 1.2em; margin: 0 8px; transform: none; }
-.letter .numeric-date { font-size: 21px; letter-spacing: 3px; }
-.letter .invitation-text { font-size: 18px; max-width: 340px; }
-.seal {
+.envelope-scene .letter .eyebrow { font-size: 9px; letter-spacing: 3px; }
+.envelope-scene .letter .ornament { margin: 9px auto 12px; }
+.envelope-scene .letter .names { font-size: 48px; margin: 14px 0; }
+.envelope-scene .letter .names span { display: inline; text-transform: none; }
+.envelope-scene .letter .names span:last-child { margin: 0; }
+.envelope-scene .letter .names em { position: static; display: inline-block; font-size: 1.2em; margin: 0 8px; transform: none; }
+.envelope-scene .letter .numeric-date { font-size: 21px; letter-spacing: 3px; }
+.envelope-scene .letter .invitation-text { font-size: 18px; max-width: 340px; margin: auto; }
+.envelope-scene .envelope-front { position: absolute; inset: 0; z-index: 4; transform: translateZ(2px); }
+.envelope-scene .wax-seal {
   position: absolute; left: 50%; top: 56%; z-index: 5;
-  transform: translate(-50%, -50%); width: 90px; height: 90px;
+  transform: translate(-50%, -50%) translateZ(3px); width: 90px; height: 90px;
   border-radius: 48% 51% 49% 47%; border: 2px solid #cfab64;
   color: #f9e0a5; background: radial-gradient(circle at 32% 24%, #d8ae65, #a5702d 57%, #7c501f);
   box-shadow: 0 4px 9px #5c3c2555, inset 0 0 0 3px #86591c, inset 0 0 0 5px #dfb875, inset 0 0 16px #6e450b55;
-  cursor: pointer; text-shadow: 0 1px 1px #57330f; transition: filter .4s, box-shadow .4s;
+  text-shadow: 0 1px 1px #57330f; cursor: pointer;
 }
-.seal:hover { filter: brightness(1.08); }
-.seal span { font-size: 31px; font-weight: 500; }
-.seal small { font-size: 13px; margin: 0 1px; }
-.seal i { display: block; font-style: normal; font-size: 20px; line-height: .8; }
-.intro-prompt { position: absolute; bottom: max(8svh, 30px, env(safe-area-inset-bottom)); left: 20px; right: 20px; text-align: center; color: #ead4a6; font-size: 19px; letter-spacing: 1px; }
-.intro-prompt span { display: block; margin-top: 14px; font-size: 15px; }
-.is-opening .seal { animation: sealRelease .7s var(--ease) forwards; }
-.is-opening .envelope-flap { animation: flapFold 1.55s .35s var(--ease) forwards; }
-.is-opening .letter { animation: letterLift 3.05s 1.5s var(--ease) forwards; }
-.is-opening .envelope-back, .is-opening .envelope-pocket { animation: pocketLower 1.6s 2.45s var(--ease) forwards; }
-.is-opening .intro-prompt { animation: promptDissolve .65s var(--ease) forwards; }
-.is-opening .intro-shade { animation: backgroundLighten 2s 2.7s var(--ease) forwards; }
-.is-opening::after { animation: ivoryLight 1.45s 3.3s var(--ease) forwards; }
-.is-opening { animation: sceneDissolve 1.25s 3.65s var(--ease) forwards; }
-@keyframes sealRelease { 20% { transform: translate(-50%, -50%) scale(.94); } 100% { transform: translate(-50%, -35%) scale(.98); opacity: 0; } }
-@keyframes flapFold {
-  0% { transform: rotateX(0); opacity: 1; }
-  65% { transform: rotateX(154deg); opacity: 1; }
-  100% { transform: rotateX(179deg); opacity: 0; }
-}
-@keyframes letterLift {
-  0% { transform: translateY(0) scale(1); }
-  45% { transform: translateY(-77%) scale(1); }
-  76% { transform: translateY(-42%) scale(1.015); }
-  100% { transform: translateY(-42%) scale(1.045); }
-}
-@keyframes pocketLower { to { transform: translateY(55%); opacity: .1; } }
-@keyframes promptDissolve { to { opacity: 0; transform: translateY(4px); } }
-@keyframes backgroundLighten { to { background: #f8f0e220; } }
-@keyframes ivoryLight { to { opacity: .63; } }
-@keyframes sceneDissolve { 0% { opacity: 1; filter: blur(0); } 100% { opacity: 0; filter: blur(7px); } }
+.envelope-scene .wax-seal span { font-size: 31px; font-weight: 500; }
+.envelope-scene .wax-seal small { font-size: 13px; margin: 0 1px; }
+.envelope-scene .wax-seal i { display: block; font-style: normal; font-size: 20px; line-height: .8; }
+.envelope-scene .envelope-hint { position: absolute; bottom: max(8svh, 30px, env(safe-area-inset-bottom)); left: 20px; right: 20px; text-align: center; color: #ead4a6; font-size: 19px; letter-spacing: 1px; }
+.envelope-scene .envelope-hint span { display: block; margin-top: 14px; font-size: 15px; }
 @media(max-width:700px) {
-  .envelope-stage { width: min(90vw, 64svh); aspect-ratio: 1.4; }
-  .letter { padding: 16px 18px; }
-  .letter .names { font-size: clamp(29px, 8.7vw, 38px); margin: 10px 0; }
-  .letter .eyebrow { font-size: 8px; letter-spacing: 2px; }
-  .letter .ornament { margin: 5px auto 8px; }
-  .letter .numeric-date { font-size: 16px; }
-  .letter .invitation-text { font-size: 14px; max-width: 240px; }
-  .seal { width: 70px; height: 70px; }
-  .seal span { font-size: 25px; }
-  .seal i { font-size: 16px; }
-  .intro-prompt { font-size: 16px; }
+  .envelope-scene .envelope { width: min(clamp(260px, 90vw, 620px), 62svh); aspect-ratio: 1.4; }
+  .envelope-scene .letter { padding: 14px 16px; }
+  .envelope-scene .letter .names { font-size: clamp(29px, 8.7vw, 38px); margin: 8px 0; }
+  .envelope-scene .letter .eyebrow { font-size: 8px; letter-spacing: 2px; }
+  .envelope-scene .letter .ornament { font-size: 12px; line-height: 1; margin: 5px auto 6px; }
+  .envelope-scene .letter .numeric-date { font-size: 16px; }
+  .envelope-scene .letter .wedding-day { margin-top: 4px; }
+  .envelope-scene .letter .invitation-text { font-size: clamp(12px, 3.4vw, 14px); line-height: 1.35; max-width: 240px; }
+  .envelope-scene .wax-seal { width: 70px; height: 70px; }
+  .envelope-scene .wax-seal span { font-size: 25px; }
+  .envelope-scene .wax-seal i { font-size: 16px; }
+  .envelope-scene .envelope-hint { font-size: 16px; }
 }
-@media(max-width:350px) { .letter { padding: 13px 14px; } .letter .invitation-text { font-size: 12px; } .letter .numeric-date { font-size: 14px; } .letter .names { margin: 8px 0; } }
-@media(max-height:500px) { .envelope-stage { width: min(60vw, 64svh); } .intro-prompt { bottom: 14px; font-size: 14px; } .letter { padding: 10px; } .letter .names { font-size: 27px; margin: 5px 0; } .letter .ornament { margin: 3px auto; } .letter .numeric-date { font-size: 12px; } .letter .invitation-text { font-size: 11px; } .letter .eyebrow { font-size: 7px; } .seal { width: 55px; height: 55px; } .seal span { font-size: 20px; } }
-@media(prefers-reduced-motion:reduce) {
-  .is-opening .seal, .is-opening .envelope-flap, .is-opening .letter, .is-opening .envelope-back, .is-opening .envelope-pocket, .is-opening .intro-shade, .is-opening::after { animation: none; }
-  .is-opening { animation: reducedDissolve .6s linear forwards; }
-  @keyframes reducedDissolve { to { opacity: 0; } }
-}
-.flap-edge { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #b78b49; stroke-width: 1.8; filter: drop-shadow(0 1px 1px #fff9); }
-.letter { background: #f8f0e2; }
-.letter::before { display: block; content: ''; position: absolute; inset: 0; background: var(--paper) center / cover no-repeat; opacity: .55; pointer-events: none; }
-.letter > * { position: relative; }
 @media(max-width:350px) {
-  .letter { padding: 10px 14px; }
-  .letter .ornament { font-size: 12px; line-height: 1; margin: 4px auto 5px; }
-  .letter .names { margin: 6px 0; }
-  .letter .names em { font-size: 1.1em; }
-  .letter .wedding-day { margin-top: 4px; }
-  .letter .invitation-text { line-height: 1.3; }
+  .envelope-scene .letter { padding: 10px 14px; }
+  .envelope-scene .letter .names { margin: 6px 0; }
+  .envelope-scene .letter .names em { font-size: 1.1em; }
+  .envelope-scene .letter .numeric-date { font-size: 14px; }
+  .envelope-scene .letter .invitation-text { font-size: 12px; }
 }
 @media(max-height:500px) {
-  .envelope-stage { width: min(88vw, 64svh); }
-  .letter .ornament { font-size: 11px; line-height: 1; margin: 3px auto; }
-  .letter .wedding-day { margin-top: 3px; }
-}
-@media (min-width: 351px) and (max-width: 430px) {
-  .letter { padding: 14px 16px; }
-  .letter .names { margin: 8px 0; }
-  .letter .ornament { font-size: 12px; line-height: 1; margin: 5px auto 6px; }
-  .letter .wedding-day { margin-top: 4px; }
-  .letter .invitation-text { font-size: clamp(12px, 3.4vw, 14px); line-height: 1.35; }
-}
-
-/* Mobile flap has a separate selector and a single rotation transition.
-   Legacy desktop keyframes can never target this physical hinge. */
-.envelope-flap-mobile { display: none; }
-@media (max-width: 700px) {
-  .envelope-stage {
-    width: min(clamp(260px, 90vw, 620px), 62svh);
-    transform: none;
-    perspective: 1200px;
-    -webkit-perspective: 1200px;
-  }
-  .envelope-assembly {
-    position: absolute;
-    inset: 0;
-    transform: none;
-    animation: none;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-  }
-  .envelope-flap { display: none; }
-  .envelope-back { z-index: 1; }
-  .envelope-flap-mobile {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 59%;
-    margin: 0;
-    z-index: 2;
-    transform-origin: 50% 0%;
-    -webkit-transform-origin: 50% 0%;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    transform: rotateX(0deg);
-    -webkit-transform: rotateX(0deg);
-    transition: transform 1.2s var(--ease) .3s;
-    -webkit-transition: -webkit-transform 1.2s var(--ease) .3s;
-  }
-  .mobile-flap-face {
-    position: absolute;
-    inset: 0;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-  }
-  .mobile-flap-face svg { display: block; width: 100%; height: 100%; overflow: visible; }
-  .mobile-flap-back { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); }
-  .letter {
-    z-index: 3;
-    opacity: 0;
-    transform: translateY(0);
-    transition: transform 1.5s var(--ease) 1.5s, opacity .35s ease 1.5s;
-  }
-  .envelope-pocket { z-index: 4; }
-  .seal { z-index: 5; }
-  .is-opening .seal { animation-duration: .3s; }
-  .is-opening .envelope-flap-mobile {
-    transform: rotateX(-158deg);
-    -webkit-transform: rotateX(-158deg);
-  }
-  .is-opening .letter { animation: none; transform: translateY(-60%); opacity: 1; }
-  .is-opening .envelope-back,
-  .is-opening .envelope-pocket,
-  .is-opening .envelope-assembly { animation: none; transform: none; }
-}
-@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
-  .envelope-flap-mobile, .letter { transition: none; }
+  .envelope-scene .envelope { width: min(88vw, 62svh); }
+  .envelope-scene .letter { padding: 10px; }
+  .envelope-scene .letter .names { font-size: 27px; margin: 5px 0; }
+  .envelope-scene .letter .eyebrow { font-size: 7px; }
+  .envelope-scene .letter .ornament { margin: 3px auto; }
+  .envelope-scene .letter .numeric-date { font-size: 12px; }
+  .envelope-scene .letter .invitation-text { font-size: 11px; }
+  .envelope-scene .envelope-hint { bottom: 14px; font-size: 14px; }
 }
