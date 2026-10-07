@@ -1,0 +1,3 @@
+import React from 'react';
+import {wedding} from '../../config/wedding';import {Heading} from '../shared';
+export default function Venue(){return <section className="light venue-section" id="venue"><div className="section-inner venue-layout reveal"><div className="venue-copy"><Heading>{wedding.labels.venue}</Heading><h3>{wedding.venue}</h3><p className="address"><span aria-hidden="true">♧</span> {wedding.address}</p><p>{wedding.venueText}</p><a className="map-button" href={wedding.mapUrl} target="_blank" rel="noopener noreferrer">{wedding.labels.map}</a></div><img className="venue-photo" src={wedding.images.venue} alt={wedding.venuePhotoAlt} loading="lazy" width="1448" height="1086" decoding="async"/></div></section>}

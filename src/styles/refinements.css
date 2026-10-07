@@ -1,0 +1,27 @@
+/* A continuous dissolve: Hero is already rendered beneath the envelope scene. */
+.site { visibility: visible; opacity: 0; transition: opacity 1.25s cubic-bezier(.22,.68,.25,1); }
+.site.is-entering, .site.ready { opacity: 1; animation: none; }
+.hero { background-size: cover; }
+.hero-copy { background: none; }
+footer { position: relative; isolation: isolate; background-size: cover; background-position: center 58%; min-height: 420px; }
+footer::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg,#f5ecdd08,#f5ecdd80 35%,#f5ecdd9c 50%,#f5ecdd80 65%,#f5ecdd08); }
+.final-copy { background: none; padding: 20px 24px; }
+.final-copy h2 { max-width: 310px; text-wrap: balance; }
+.final-copy .signature { color: #96692f; }
+.final-copy .heart { color: #96692f; }
+.reveal.reveal-group { opacity: 1; transform: none; transition: none; }
+.reveal-item { opacity: 0; transform: translateY(18px) scale(.985); transition: opacity 1.15s cubic-bezier(.22,.68,.25,1) var(--reveal-delay,0ms), transform 1.25s cubic-bezier(.22,.68,.25,1) var(--reveal-delay,0ms); }
+.reveal-item.visible { opacity: 1; transform: translateY(0) scale(1); }
+@media(max-width:700px) { .hero { background-size: cover; background-position: center; } .hero-copy { background: none; } footer { background-size: cover; min-height: 380px; } .final-copy { background: none; } footer::before { background: linear-gradient(90deg,#f5ecdd28,#f5ecddbf 45%,#f5ecddbf 55%,#f5ecdd28); } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } .reveal, .reveal-item { opacity: 1; transform: none; } .light::before { animation: none; } .gallery figure:hover img { transform: none; } }
+.final-copy h2 { white-space: pre-line; }
+.light::before { mask-image: linear-gradient(to right, #000 35%, transparent); }
+.hero { background-image: var(--hero-image); }
+footer { background-image: var(--footer-image); }
+@media(max-width:700px) { .hero { background-image: var(--hero-mobile-image); } footer { background-image: var(--footer-mobile-image); background-position: center 65%; } }
+/* Intrinsic image attributes reserve space; CSS determines the displayed crop. */
+.venue-photo, .gallery img { height: auto; }
+.hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 68%, #f5eddfbd 0%, #f5eddf88 25%, transparent 65%); }
+.hero-copy { position: relative; z-index: 1; }
+.hero::before { background: radial-gradient(ellipse at 50% 68%, #f5eddfeb 0%, #f5eddfb3 28%, transparent 68%); }
+.hero .invitation-text { text-shadow: 0 1px 8px #fff4df; }
