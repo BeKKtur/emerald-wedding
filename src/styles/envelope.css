@@ -139,16 +139,35 @@
     width: min(clamp(260px, 90vw, 390px), 62svh);
     aspect-ratio: 1.4;
     transform: none;
+    perspective: 1200px;
+    -webkit-perspective: 1200px;
+  }
+  .envelope-assembly {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
   }
   .envelope-back { z-index: 1; }
   .envelope-flap {
     z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 59%;
-    transform-origin: center top;
+    transform-origin: 50% 0%;
+    -webkit-transform-origin: 50% 0%;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
   }
-  /* One two-sided paper surface avoids a mirrored mask detaching visually in 3D. */
-  .flap-front { backface-visibility: visible; }
-  .flap-back { display: none; }
+  /* The reverse face is flipped horizontally: its symmetric outline stays on
+     the same hinge. A vertical flip shifts the masked paper outline in WebKit. */
+  .flap-front, .flap-back {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .flap-back { display: block; transform: rotateY(180deg); }
   .letter { z-index: 3; opacity: 0; }
   .envelope-pocket { z-index: 4; }
   .seal { z-index: 5; }
@@ -160,9 +179,7 @@
   }
   .is-opening .envelope-back,
   .is-opening .envelope-pocket { animation: none; }
-  .is-opening .envelope-assembly {
-    animation: phoneAssemblyLower 1.35s 2.65s var(--ease) forwards;
-  }
+  .is-opening .envelope-assembly { animation: none; transform: none; }
   @keyframes phoneFlapOpen {
     from { transform: rotateX(0deg); }
     to { transform: rotateX(-158deg); }
@@ -172,9 +189,7 @@
     25% { opacity: 1; }
     100% { transform: translateY(-38%); opacity: 1; }
   }
-  @keyframes phoneAssemblyLower {
-    to { transform: translateY(12%); }
-  }
+
 }
 @media (max-width: 430px) and (prefers-reduced-motion: reduce) {
   .is-opening .envelope-flap,
